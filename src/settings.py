@@ -1,1 +1,1 @@
-import defaults as default
+DEV_IDS = (507642999992352779,)

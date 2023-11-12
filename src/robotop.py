@@ -4,15 +4,5 @@ if True: # \/ # PyVersion // assert sys.version_info[:2] == (3, 11)
     raise ValueError(msg)
 
 if True: # \/ # Imports
-  import db
+  from db import backup_all_databases, db
   from imports import *
-
-tcr.timeit.start('uwu')
-
-@tcr.timeit
-def test():
-  kon(db.keys())
-
-test()
-
-tcr.timeit.stop('uwu')
