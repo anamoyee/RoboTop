@@ -1595,3 +1595,25 @@ warn = {
     "you're missing permissions, but have this duck for trying => 🦆",
   ]
 }
+
+command_doesnt_exist = [
+  "Unknown command: `{cmd}`",
+  "That command doesn't exist!",
+] # {cmd} -> command's name
+
+guild_command_in_dms = [
+  "You can't use that command in DMs.",
+]
+
+dm_command_in_guild = [
+  "You can't use that command in a Server. (go to DMs)"
+]
+
+insufficient_permissions = [
+  "**{cmd}** is too powerful for you.",
+  "You have no power here!!",
+]
+
+insufficient_permissions_specified = [
+  "You need the {permissions} permissions to do that!!"
+]

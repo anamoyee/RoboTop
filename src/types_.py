@@ -1,5 +1,6 @@
-from collections.abc import Sequence
-from typing import TypedDict, Union
+from collections.abc import Callable, Sequence
+from enum import Enum
+from typing import TypedDict
 
 from hikari import (
   Embed,
@@ -15,7 +16,7 @@ from hikari import (
 )
 
 
-class ParsedPrefixEvent(TypedDict):
+class ParsedMessageEvent(TypedDict):
   prefix: str
   message: str
   prefixed: bool
@@ -39,3 +40,35 @@ class DictMessage(TypedDict):
   user_mentions: undefined.UndefinedOr[snowflakes.SnowflakeishSequence[users.PartialUser] | bool]
   role_mentions: undefined.UndefinedOr[snowflakes.SnowflakeishSequence[guilds.PartialRole] | bool]
   flags: undefined.UndefinedType | (int | MessageFlag)
+
+
+class CTF:
+  NONE = 1 << 0
+  DEV = 1 << 1
+  HIDDEN = 1 << 2  # Not visible in r!help and other places if any.
+  SPECIAL = 1 << 3  # I literally forgor whta this meant 💀
+  DM_ONLY = 1 << 4
+  GUILD_ONLY = 1 << 5
+
+
+class CAT(Enum):
+  NONE = None
+  FUN = 'fun'
+  IMAGES = 'images'
+  INFORMATION = 'information'
+  RANDOM = 'random'
+  TOOLS = 'tools'
+  SERVER = 'server'
+  SETTINGS = 'settings'
+  MODERATION = 'moderation'
+
+
+class CommandsLookup(TypedDict):
+  function: Callable
+  category: str | None  # None if no category contains this command
+  flags: int
+
+
+class CommandCategoryType(TypedDict):
+  name: str
+  emoji: str

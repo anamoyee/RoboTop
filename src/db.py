@@ -6,7 +6,7 @@ from datetime import datetime
 from functools import wraps
 
 import defaults
-from imports import Any, ItemsView, KeysView, Mapping, ValuesView, os, p, tcr, unix
+from imports import Any, ItemsView, KeysView, Mapping, ValuesView, get_version, os, p, tcr, unix
 
 _db_directory_name = 'RoboTopDB'
 
@@ -104,6 +104,8 @@ class _DBInterace(ABC):
     result = tcr.merge_dicts(this, self._thisdefault, strict=True)
     if 'first_seen' in result and result['first_seen'] is None:
       result['first_seen'] = unix()
+    if 'first_seen_version' in result and result['first_seen_version'] is None:
+      result['first_seen_version'] = get_version()
     self.write(key, result)
     return result
 

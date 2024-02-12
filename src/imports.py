@@ -1,4 +1,6 @@
 if True:  # \/ # Imports
+  import asyncio
+  import inspect
   import math
   import os
   import pathlib as p
@@ -8,21 +10,28 @@ if True:  # \/ # Imports
   import time
   from collections.abc import Callable, ItemsView, Iterable, KeysView, Mapping, ValuesView
   from functools import partial
+  from random import choice as random
   from sys import exit as sexit
-  from typing import Any, Literal, LiteralString
+  from typing import Any, Literal, LiteralString, Unpack
 
   import hikari
   import lightbulb as lb
   import miru
   import tcrutils as tcr
   from lightbulb.ext import tasks
-  from tcrutils import Null, c, run_sac
+  from tcrutils import DiscordLimits, Null, c, codeblock, run_sac, uncodeblock
   from tcrutils import console as kon
+  from tcrutils import float2int as float_or_int
+  from tcrutils import float2int as int_or_float
+  from tcrutils.discord import PERMISSIONS_DICT, embed
+  from tcrutils.discord import permissions as perms
 
+  import assets as A
   import defaults as default
   import pools as pool
   import settings as S  # ass
   import types_ as types
+  from types_ import CAT, CTF
 
 
 if True:  # \/ # Consts
@@ -40,30 +49,40 @@ if True:  # \/ # Consts
     type=hikari.ActivityType.CUSTOM,
   )
 
+  GUILD_COUNT: int = -1  # Gets set in on_StartedEvent()
+
+if True:  # \/ # Banner sheit
+  for k, v in S.BANNER[1].items():
+    S.BANNER[0] = S.BANNER[0].replace(k, c('reset') + c(v))
+  S.BANNER = S.BANNER[0] + c('reset')
+
+if True:  # \/ # Execute structs
+  _execute_user_mentions = set()
+  _execute_role_mentions = set()
+  _execute_embed = {}
+
 if True:  # \/ # Sync functions
 
-  def unix():
-    """Return current unix timestamp."""
+  def unix() -> int:
+    """Return current unix timestamp (int)."""
     return math.floor(time.time())
 
-  def token():
-    """Return selected token."""
-    a = TOKEN2 if S.TESTMODE else TOKEN
-    if a is None:
-      msg = (
-        f"{tcr.c('Red')}Unknown token - check TOKEN{'2' if S.TESTMODE else ''}.txt{tcr.c('reset')}"
-      )
-      raise tcr.error.ConfigurationError(msg)
-    return a.strip()
+  def get_version() -> int:
+    """Return the current version as an int."""
+    return S.VERSION
 
   def testmode():
     """Return a suffix for displays if in testmode, can be used in if statements."""
     return ' - Testmode' if S.TESTMODE else ''
 
-  def curly_filter(text, _key='𒐫𒐫𒐫𒐫𒐫'):
+  def testintbool():
+    """Alias for bool(testmode())."""
+    return tcr.intbool(testmode())
+
+  def curly_filter(text, _key='𒐫𒐫𒐫𒐫𒐫') -> str:
     return text.replace('{', _key + '[').replace('}', _key + ']')
 
-  def curly_unfilter(text, _key='𒐫𒐫𒐫𒐫𒐫'):
+  def curly_unfilter(text, _key='𒐫𒐫𒐫𒐫𒐫') -> str:
     return text.replace(_key + '[', '{').replace(_key + ']', '}')
 
   def number_converter(*args, replace_with=0, negative_allowed=True):
@@ -82,30 +101,20 @@ if True:  # \/ # Sync functions
       temp.append(b)
     return type(args)(temp)
 
-  def float_or_int(n: float) -> float | int:
-    if round(n) == n:
-      return int(n)
-    return float(n)
+  def accept_args(func: Callable, kwargs: Mapping) -> Mapping:
+    func_params = inspect.signature(func).parameters
 
-  int_or_float = float_or_int
+    return {key: value for key, value in kwargs.items() if key in func_params}
 
-  def commafy_str_or_int(text: str | int, splitter: str = ','):
-    text = str(text)
-    temp = ''
-    for i, letter in enumerate(text[::-1]):
-      temp += letter
-      if i % 3 == 2 and i != len(text) - 1:
-        temp += splitter
-    return temp[::-1]
+if True:  # \/ # Async functions
 
-  def codeblock(text: str, langcode='') -> str:
-    return 3 * '`' + langcode + '\n' + text + 3 * '`'
+  async def get_guild_count(bot: lb.BotApp):
+    return len(await bot.rest.fetch_my_guilds())
 
-  def uncodeblock(text: str) -> str:
-    if text[-3:] == tcr.BACKTICKS and text[:3] == tcr.BACKTICKS:
-      code_start = 3
-      code_end = -3
-      if '\n' in text[3:]:  # Check if there is a language code specified
-        code_start = text.index('\n') + 1
-      return text[code_start:code_end].strip()
-    return text
+if True:  # \/ # Errors
+
+  class InternalError(Exception):
+    """Something wrong happened internally."""
+
+  class ParametersError(Exception):
+    """Used when parse_command_parameters() wants to signify invalid parameters."""
