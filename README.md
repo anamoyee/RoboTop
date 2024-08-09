@@ -1,6 +1,6 @@
 # [RoboTop](https://robotop.xyz) *Clone*
 
-*Originally know as...*
+*Originally known as...*
 > *A Discord bot by **[GD Colon](https://gdcolon.com)** with all sorts of wacky and uncharacteristic features.*
 
 A clone/remake of **[RoboTop](https://robotop.xyz)**, a bot originally made by **[Colon](https://gdcolon.com)** <img style="width: 15px; height: 15px;" src="https://cdn.discordapp.com/emojis/1132968267963715634.webp?size=64&name=fluff&quality=lossless">. I am remaking parts of that bot because of its shutdown on August 12th 2023. RIP RoboTop, You will be missed!
